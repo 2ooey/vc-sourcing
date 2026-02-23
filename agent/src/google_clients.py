@@ -21,25 +21,15 @@ class GoogleClients:
         self._authenticate()
 
     def _authenticate(self):
-        # The file token.json stores the user's access and refresh tokens, and is
-        # created automatically when the authorization flow completes for the first time.
-        if os.path.exists(self.token_file):
-            self.creds = Credentials.from_authorized_user_file(self.token_file, SCOPES)
-        # If there are no (valid) credentials available, let the user log in.
-        if not self.creds or not self.creds.valid:
-            if self.creds and self.creds.expired and self.creds.refresh_token:
-                self.creds.refresh(Request())
-            else:
-                if not os.path.exists(self.credentials_file):
-                    print(f"ERROR: {self.credentials_file} missing. Please download it from GCP.")
-                    return
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    self.credentials_file, SCOPES
-                )
-                self.creds = flow.run_local_server(port=0)
-            # Save the credentials for the next run
-            with open(self.token_file, "w") as token:
-                token.write(self.creds.to_json())
+        # Decode and write credentials
+        creds_json = base64.b64decode(os.environ['CREDENTIALS_JSON']).decode('utf-8')
+        with open(self.credentials_file, 'w') as f:
+            f.write(creds_json)
+
+        # Decode and write token
+        token_json = base64.b64decode(os.environ['TOKEN_JSON']).decode('utf-8')
+        with open(self.token_file, 'w') as f:
+            f.write(token_json)
 
     def append_to_sheet(self, spreadsheet_id, range_name, values):
         """Appends a row of values to the specified spreadsheet."""
