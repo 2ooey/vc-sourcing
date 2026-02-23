@@ -1,0 +1,6 @@
+# 環境変数や認証情報をGit管理から除外
+agent/.env
+agent/credentials.json
+agent/token.json
+agent/__pycache__/
+*.pyc
